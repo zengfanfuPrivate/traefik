@@ -1,0 +1,34 @@
+[http.middlewares.dash-compress.compress]
+[http.middlewares.dash-auth.basicAuth]
+  #htpasswd -nb soulteary soulteary
+  users = [
+    "soulteary:$apr1$L9HNHqCX$3fbRXTmI7boHYuDmVfulQ/"
+  ]
+
+[http.routers.dashboard-redirect-https]
+  rule = "Host(`traefik-dashboard.account.dev.baai.ac.cn`)"
+  entryPoints = ["http"]
+  service = "noop"
+  middlewares = ["https-redirect"]
+  priority = 100
+
+[http.routers.dashboard]
+  rule = "Host(`traefik-dashboard.account.dev.baai.ac.cn`)"
+  entrypoints = ["https"]
+  service = "dashboard@internal"
+  middlewares = ["dash-compress"]
+  [http.routers.dashboard.tls]
+
+[http.routers.api]
+  rule = "Host(`traefik-dashboard.account.dev.baai.ac.cn`) && PathPrefix(`/api`)"
+  entrypoints = ["https"]
+  service = "api@internal"
+  middlewares = ["dash-compress"]
+  [http.routers.api.tls]
+
+[http.routers.ping]
+  rule = "Host(`traefik-dashboard.account.dev.baai.ac.cn`) && PathPrefix(`/ping`)"
+  entrypoints = ["https"]
+  service = "ping@internal"
+  middlewares = ["dash-compress"]
+  [http.routers.ping.tls]

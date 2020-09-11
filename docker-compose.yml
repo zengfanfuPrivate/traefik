@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  
+  traefik:
+    image: traefik:v2.2.0
+    command: traefik --configFile /etc/traefik.toml
+    networks:
+      - traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs/:/data/certs/:ro
+      - ./logs:/data/logs:rw
+      - ./traefik.toml:/etc/traefik.toml:ro
+      - ./config/:/etc/traefik/config/:ro
+
+# 先创建外部网卡
+# docker network create traefik
+networks:
+  traefik:
+    external: true
